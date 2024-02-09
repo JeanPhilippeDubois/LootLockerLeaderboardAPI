@@ -60,6 +60,4 @@ npm start
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-Feel free to customize the content further, add badges, or include any additional information relevant to your project. This is a basic template to get you started. Adjust placeholder values and paths based on your project structure.
+--- on your project structure.
