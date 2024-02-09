@@ -1,0 +1,3 @@
+RewriteEngine on
+SSLProxyEngine on # only needed when used with SSL
+RewriteRule ^.*$ http://%{HTTP_HOST}:36437%{REQUEST_URI}
