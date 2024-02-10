@@ -53,18 +53,21 @@ db.getUserStatsAndPosition = (lootlocker_UID, game_level_id) => {
     });
 };
 
-db.upsertUserStats = (user_display_name, lootlocker_UID, lootlocker_session_id, game_level_id, user_laptime, user_inputs) => {
+db.upsertUserStats = (user_display_name, lootlocker_UID, lootlocker_session_id, game_level_id, user_inputs, minutes, seconds, hundreds) => {
     return new Promise((resolve, reject) => {
         const sql = `
             INSERT INTO leaderboard (user_display_name, lootlocker_UID, lootlocker_session_id, game_level_id, user_laptime, user_inputs)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, MAKETIME(?, ?, ?), ?)
             ON DUPLICATE KEY UPDATE
-            user_laptime = VALUES(user_laptime),
+            user_laptime = CASE
+                WHEN MAKETIME(?, ?, ?) < user_laptime THEN MAKETIME(?, ?, ?)
+                ELSE user_laptime
+            END,
             user_inputs = VALUES(user_inputs),
             user_display_name = VALUES(user_display_name),
             lootlocker_session_id = VALUES(lootlocker_session_id)
         `;
-        pool.query(sql, [user_display_name, lootlocker_UID, lootlocker_session_id, game_level_id, user_laptime, user_inputs], (error, result) => {
+        pool.query(sql, [user_display_name, lootlocker_UID, lootlocker_session_id, game_level_id, minutes, seconds, hundreds, user_inputs,], (error, result) => {
             if (error) {
                 return reject(error);
             }

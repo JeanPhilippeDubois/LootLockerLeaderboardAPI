@@ -43,8 +43,16 @@ apiRouter.post('/api/upsert', async (req, res, next) => {
     const sanitizedLootlockerSessionID = String(lootlocker_session_id).substring(0, 100); // Truncate to 100 characters
     const sanitizedGameLevelID = String(game_level_id).substring(0, 50); // Truncate to 50 characters
     const sanitizedUserInputs = String(user_inputs); // Longtext has no specific validation
-    const sanitizedUserLaptime = convertToTime(user_laptime);
-    var result = ""
+    var separated = user_laptime.split(":")
+
+    if(separated && separated.length > 3) {
+        var minutes = separated[0];
+        var seconds = separated[1];
+        var hundreds = separated[2];
+    }
+
+    var result = "";
+
     try {
         result = await checkLootLockerSession(sanitizedLootlockerSessionID);
     } catch (error) {
@@ -52,7 +60,7 @@ apiRouter.post('/api/upsert', async (req, res, next) => {
         res.sendStatus(500);
     }
     
-    if (sanitizedUserLaptime === null && result !== "") {
+    if (sanitizedUserLaptime === null && result !== "" && minutes !== null) {
         return res.status(400).json({ error: 'Invalid user_laptime format' });
     } else {
         try {
@@ -61,8 +69,10 @@ apiRouter.post('/api/upsert', async (req, res, next) => {
                 sanitizedLootlockerUID,
                 sanitizedLootlockerSessionID,
                 sanitizedGameLevelID,
-                sanitizedUserLaptime,
-                sanitizedUserInputs
+                sanitizedUserInputs,
+                minutes,
+                seconds,
+                hundreds
             );
             res.status(200).json({ message: 'Upsert operation successful' });
         } catch (error) {

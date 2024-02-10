@@ -17,20 +17,9 @@ app.use(morgan('combined'));
 
 app.use(apiRouter)
  
-const httpServer = http.createServer(app);
+app.listen(PORT, function(err){
+  if (err) console.log("Error in server setup")
+  console.log("Server listening on Port", PORT);
+})
 
-
-const httpsServer = https.createServer({
-  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
-}, app);
-
-httpServer.listen(80, () => {
-    console.log('HTTP Server running on port 80');
-});
-
-httpsServer.listen(443, () => {
-    console.log('HTTPS Server running on port 443');
-});
- 
 module.exports = app;
